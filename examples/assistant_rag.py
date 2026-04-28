@@ -24,10 +24,19 @@ def test():
 
 
 def app_gui():
+    llm_cfg = {
+        'model': 'qwen3-max-2026-01-23',
+        'model_type': 'qwen_dashscope',
+        'api_key': 'sk-a4cf2f63ea094d419d01829800fc68bf',
+        'generate_cfg': {
+            'top_p': 0.8
+        }
+    }
     # Define the agent
-    bot = Assistant(llm={'model': 'qwen-plus-latest'},
+    bot = Assistant(llm=llm_cfg,
                     name='Assistant',
-                    description='使用RAG检索并回答，支持文件类型：PDF/Word/PPT/TXT/HTML。')
+                    description='使用RAG检索并回答，支持文件类型：PDF/Word/PPT/TXT/HTML。',
+                    files=["https://arxiv.org/pdf/1706.03762.pdf"])
     chatbot_config = {
         'prompt.suggestions': [
             {
@@ -36,7 +45,8 @@ def app_gui():
             {
                 'text': '第二章第一句话是什么？'
             },
-        ]
+        ],
+        "verbose": True
     }
     WebUI(bot, chatbot_config=chatbot_config).run()
 

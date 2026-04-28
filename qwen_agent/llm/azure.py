@@ -24,6 +24,7 @@ from qwen_agent.llm.oai import TextChatAtOAI
 @register_llm('azure')
 class TextChatAtAzure(TextChatAtOAI):
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         cfg = cfg or {}
@@ -48,6 +49,7 @@ class TextChatAtAzure(TextChatAtOAI):
         if api_version:
             api_kwargs['api_version'] = api_version
 
+        @log_execution
         def _chat_complete_create(*args, **kwargs):
             client = openai.AzureOpenAI(**api_kwargs)
             return client.chat.completions.create(*args, **kwargs)

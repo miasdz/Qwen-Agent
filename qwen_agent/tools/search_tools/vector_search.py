@@ -25,6 +25,7 @@ from qwen_agent.tools.search_tools.base_search import BaseSearch
 class VectorSearch(BaseSearch):
     # TODO: Optimize the accuracy of the embedding retriever.
 
+    @log_execution
     def sort_by_scores(self, query: str, docs: List[Record], **kwargs) -> List[Tuple[str, int, float]]:
         # TODO: More types of embedding can be configured
         try:

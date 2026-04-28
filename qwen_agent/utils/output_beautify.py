@@ -59,6 +59,7 @@ def multimodal_typewriter_print(messages: List[dict], text: str = '') -> str:
     except ImportError:
         JUPYTER_AVAILABLE = False
 
+    @log_execution
     def display_image_if_exists(image_path: str) -> bool:
         """Display image if it exists and Jupyter is available."""
         if JUPYTER_AVAILABLE:
@@ -74,6 +75,7 @@ def multimodal_typewriter_print(messages: List[dict], text: str = '') -> str:
                 return False
         return False
     
+    @log_execution
     def parse_tool_response_content(content):
         """Parse tool response content for both text and images."""
         text_parts = []

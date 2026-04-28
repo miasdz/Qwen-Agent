@@ -36,6 +36,7 @@ from qwen_agent.log import logger
 @register_llm('oai')
 class TextChatAtOAI(BaseFnCallModel):
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'gpt-4o-mini'
@@ -64,6 +65,7 @@ class TextChatAtOAI(BaseFnCallModel):
             if api_key:
                 api_kwargs['api_key'] = api_key
 
+            @log_execution
             def _chat_complete_create(*args, **kwargs):
                 # OpenAI API v1 does not allow the following args, must pass by extra_body
                 extra_params = ['top_k', 'repetition_penalty']
@@ -78,6 +80,7 @@ class TextChatAtOAI(BaseFnCallModel):
                 client = openai.OpenAI(**api_kwargs)
                 return client.chat.completions.create(*args, **kwargs)
 
+            @log_execution
             def _complete_create(*args, **kwargs):
                 # OpenAI API v1 does not allow the following args, must pass by extra_body
                 extra_params = ['top_k', 'repetition_penalty']
@@ -95,6 +98,7 @@ class TextChatAtOAI(BaseFnCallModel):
             self._complete_create = _complete_create
             self._chat_complete_create = _chat_complete_create
 
+    @log_execution
     def _chat_stream(
         self,
         messages: List[Message],
@@ -158,6 +162,7 @@ class TextChatAtOAI(BaseFnCallModel):
         except OpenAIError as ex:
             raise ModelServiceError(exception=ex)
 
+    @log_execution
     def _chat_no_stream(
         self,
         messages: List[Message],
@@ -177,6 +182,7 @@ class TextChatAtOAI(BaseFnCallModel):
         except OpenAIError as ex:
             raise ModelServiceError(exception=ex)
 
+    @log_execution
     def convert_messages_to_dicts(self, messages: List[Message]) -> List[dict]:
         # TODO: Change when the VLLM deployed model needs to pass reasoning_complete.
         #  At this time, in order to be compatible with lower versions of vLLM,

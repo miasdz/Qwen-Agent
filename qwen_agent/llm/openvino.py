@@ -53,6 +53,7 @@ class OpenVINO(BaseFnCallModel):
                 files=files)
     """
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         if 'ov_model_dir' not in cfg:
@@ -79,6 +80,7 @@ class OpenVINO(BaseFnCallModel):
         )
         self.tokenizer = AutoTokenizer.from_pretrained(cfg['ov_model_dir'])
 
+    @log_execution
     def _get_stopping_criteria(self, generate_cfg: dict):
         from transformers.generation.stopping_criteria import StoppingCriteria, StoppingCriteriaList
 
@@ -93,18 +95,21 @@ class OpenVINO(BaseFnCallModel):
                     The tokenizer used to decode the model outputs.
             """
 
+            @log_execution
             def __init__(self, stop_sequences, tokenizer):
                 if isinstance(stop_sequences, str):
                     stop_sequences = [stop_sequences]
                 self.stop_sequences = stop_sequences
                 self.tokenizer = tokenizer
 
+            @log_execution
             def __call__(self, input_ids, scores, **kwargs) -> bool:
                 decoded_output = self.tokenizer.decode(input_ids.tolist()[0])
                 return any(decoded_output.endswith(stop_sequence) for stop_sequence in self.stop_sequences)
 
         return StoppingCriteriaList([StopSequenceCriteria(generate_cfg['stop'], self.tokenizer)])
 
+    @log_execution
     def _chat_stream(
         self,
         messages: List[Message],
@@ -126,6 +131,7 @@ class OpenVINO(BaseFnCallModel):
         del generate_cfg['stop']
         del generate_cfg['seed']
         
+        @log_execution
         def generate_and_signal_complete():
             self.ov_model.generate(**generate_cfg)
 
@@ -139,6 +145,7 @@ class OpenVINO(BaseFnCallModel):
             else:
                 yield [Message(ASSISTANT, partial_text)]
 
+    @log_execution
     def _chat_no_stream(
         self,
         messages: List[Message],

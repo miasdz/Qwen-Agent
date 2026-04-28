@@ -34,6 +34,7 @@ class GroupChat(Agent, MultiAgentHub):
 
     _VALID_AGENT_SELECTION_METHODS = ['manual', 'round_robin', 'random', 'auto']
 
+    @log_execution
     def __init__(self,
                  agents: Union[List[Agent], Dict],
                  agent_selection_method: Optional[str] = 'auto',
@@ -78,6 +79,7 @@ class GroupChat(Agent, MultiAgentHub):
             assert llm is not None, 'Need to provide LLM to the host in auto mode'
             self.host = GroupChatAutoRouter(function_list=function_list, llm=llm, agents=self.agents, name='host')
 
+    @log_execution
     def _run(self,
              messages: List[Message] = None,
              lang: str = 'zh',
@@ -107,6 +109,7 @@ class GroupChat(Agent, MultiAgentHub):
                                           mentioned_agents_name=mentioned_agents_name,
                                           **kwargs)
 
+    @log_execution
     def _gen_batch_response(self,
                             messages: List[Message] = None,
                             lang: str = 'zh',

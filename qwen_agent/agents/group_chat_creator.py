@@ -68,6 +68,7 @@ assert ANSWER_TOKEN in ROLE_CREATE_SYSTEM
 
 class GroupChatCreator(Agent):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -81,6 +82,7 @@ class GroupChatCreator(Agent):
                          description=description,
                          **kwargs)
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              agents: List[Agent] = None,
@@ -92,6 +94,7 @@ class GroupChatCreator(Agent):
         for rsp in self._call_llm(messages=messages):
             yield self._postprocess_messages(rsp)
 
+    @log_execution
     def _preprocess_messages(self, messages: List[Message]) -> List[Message]:
         new_messages = []
         content = []
@@ -110,6 +113,7 @@ class GroupChatCreator(Agent):
                     content = []
         return new_messages
 
+    @log_execution
     def _postprocess_messages(self, messages: List[Message]) -> List[Message]:
         new_messages = []
         assert len(messages) == 1
@@ -124,6 +128,7 @@ class GroupChatCreator(Agent):
         new_messages.append(Message(message.role, answer, name=message.name))
         return new_messages
 
+    @log_execution
     def _extract_role_config_and_answer(self, text: str) -> Tuple[str, List[str], str]:
         background, cfgs, answer = '', [], ''
         back_pos, cfg_pos, ans_pos = text.find(f'{BACKGROUND_TOKEN}: '), text.find(f'{CONFIG_TOKEN}: '), text.find(

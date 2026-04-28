@@ -47,6 +47,7 @@ Only return the role name from [{agent_names}] or '[STOP]'. Do not reply any oth
         'en': PROMPT_TEMPLATE_EN,
     }
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -69,6 +70,7 @@ Only return the role name from [{agent_names}] or '[STOP]'. Do not reply any oth
                          description=description,
                          **kwargs)
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         dialogue = [] # convert existing messages into a prompt
         for msg in messages:

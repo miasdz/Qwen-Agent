@@ -45,6 +45,7 @@ PROMPT_TEMPLATE = {
 
 class ContinueWriting(Agent):
 
+    @log_execution
     def _run(self, messages: List[Message], knowledge: str = '', lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         messages = copy.deepcopy(messages)
         messages[-1][CONTENT] = PROMPT_TEMPLATE[lang].format(

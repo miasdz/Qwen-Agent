@@ -76,6 +76,7 @@ Result:
         'en': PROMPT_TEMPLATE_EN,
     }
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -89,6 +90,7 @@ Result:
             new_generate_cfg={'stop': ['"], "instruction":']},
         )
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         for last in super()._run(messages=messages, lang=lang, **kwargs):
             continue

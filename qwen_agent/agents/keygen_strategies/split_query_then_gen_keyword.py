@@ -27,6 +27,7 @@ from qwen_agent.tools import BaseTool
 
 class SplitQueryThenGenKeyword(Agent):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -36,6 +37,7 @@ class SplitQueryThenGenKeyword(Agent):
         self.split_query = SplitQuery(llm=self.llm)
         self.keygen = GenKeyword(llm=llm)
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         query = messages[-1].content
 

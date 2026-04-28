@@ -40,6 +40,7 @@ EXTRACT_QUERY_TEMPLATE = {'zh': EXTRACT_QUERY_TEMPLATE_ZH, 'en': EXTRACT_QUERY_T
 class DialogueRetrievalAgent(Assistant):
     """This is an agent for super long dialogue."""
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              lang: str = 'en',

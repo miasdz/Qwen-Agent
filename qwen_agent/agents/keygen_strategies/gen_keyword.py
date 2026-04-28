@@ -66,6 +66,7 @@ Keywords:
         'en': PROMPT_TEMPLATE_EN,
     }
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -77,6 +78,7 @@ Keywords:
             new_generate_cfg={'stop': ['Observation:']},
         )
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         messages = copy.deepcopy(messages)
         messages[-1][CONTENT] = self.PROMPT_TEMPLATE[lang].format(user_request=messages[-1].content)

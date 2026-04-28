@@ -22,6 +22,7 @@ from qwen_agent.llm.schema import ASSISTANT, FUNCTION, USER, ContentItem, Messag
 
 class BaseFnCallModel(BaseChatModel, ABC):
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         fncall_prompt_type = self.generate_cfg.get('fncall_prompt_type', 'nous')
@@ -38,6 +39,7 @@ class BaseFnCallModel(BaseChatModel, ABC):
         if 'fncall_prompt_type' in self.generate_cfg:
             del self.generate_cfg['fncall_prompt_type']
 
+    @log_execution
     def _preprocess_messages(
         self,
         messages: List[Message],
@@ -65,6 +67,7 @@ class BaseFnCallModel(BaseChatModel, ABC):
             )
         return messages
 
+    @log_execution
     def _postprocess_messages(
         self,
         messages: List[Message],
@@ -81,6 +84,7 @@ class BaseFnCallModel(BaseChatModel, ABC):
             )
         return messages
 
+    @log_execution
     def _remove_fncall_messages(self, messages: List[Message], lang: Literal['en', 'zh']) -> List[Message]:
         # Change function calls into user messages so that the model won't try
         # to generate function calls when given functions and function_choice="none".
@@ -117,6 +121,7 @@ class BaseFnCallModel(BaseChatModel, ABC):
                 new_messages.append(msg)
         return new_messages
 
+    @log_execution
     def _chat_with_functions(
         self,
         messages: List[Message],
@@ -135,6 +140,7 @@ class BaseFnCallModel(BaseChatModel, ABC):
                 del generate_cfg[k]
         return self._continue_assistant_response(messages, generate_cfg=generate_cfg, stream=stream)
 
+    @log_execution
     def _continue_assistant_response(
         self,
         messages: List[Message],

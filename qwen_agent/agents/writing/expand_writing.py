@@ -53,6 +53,7 @@ PROMPT_TEMPLATE = {
 
 class ExpandWriting(Agent):
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              knowledge: str = '',

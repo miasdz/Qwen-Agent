@@ -29,11 +29,13 @@ from qwen_agent.log import logger
 @register_llm('qwen_dashscope')
 class QwenChatAtDS(BaseFnCallModel):
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'qwen-max'
         initialize_dashscope(cfg)
 
+    @log_execution
     def _chat_stream(
         self,
         messages: List[Message],
@@ -57,6 +59,7 @@ class QwenChatAtDS(BaseFnCallModel):
         else:
             return self._full_stream_output(response)
 
+    @log_execution
     def _chat_no_stream(
         self,
         messages: List[Message],
@@ -85,6 +88,7 @@ class QwenChatAtDS(BaseFnCallModel):
                                     message=response.message,
                                     extra={'model_service_info': response})
 
+    @log_execution
     def _continue_assistant_response(
         self,
         messages: List[Message],
@@ -94,6 +98,7 @@ class QwenChatAtDS(BaseFnCallModel):
         return self._chat(messages, stream=stream, delta_stream=False, generate_cfg=generate_cfg)
 
     @staticmethod
+    @log_execution
     def _delta_stream_output(response) -> Iterator[List[Message]]:
         for chunk in response:
             if chunk.status_code == HTTPStatus.OK:
@@ -107,6 +112,7 @@ class QwenChatAtDS(BaseFnCallModel):
                 raise ModelServiceError(code=chunk.code, message=chunk.message, extra={'model_service_info': chunk})
 
     @staticmethod
+    @log_execution
     def _full_stream_output(response) -> Iterator[List[Message]]:
         full_content = ''
         full_reasoning_content = ''

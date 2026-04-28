@@ -49,13 +49,16 @@ def append_signal_handler(sig, handler):
         old_handler = None
         if sig == signal.SIGINT:
 
+            @log_execution
             def old_handler(*args, **kwargs):
                 raise KeyboardInterrupt
         elif sig == signal.SIGTERM:
 
+            @log_execution
             def old_handler(*args, **kwargs):
                 raise SystemExit
 
+    @log_execution
     def new_handler(*args, **kwargs):
         handler(*args, **kwargs)
         if old_handler is not None:
@@ -312,6 +315,7 @@ def json_loads(text: str) -> dict:
 
 class PydanticJSONEncoder(json.JSONEncoder):
 
+    @log_execution
     def default(self, obj):
         if isinstance(obj, BaseModel):
             return obj.model_dump()

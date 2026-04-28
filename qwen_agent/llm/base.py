@@ -34,6 +34,7 @@ LLM_REGISTRY = {}
 
 def register_llm(model_type):
 
+    @log_execution
     def decorator(cls):
         LLM_REGISTRY[model_type] = cls
         return cls
@@ -43,6 +44,7 @@ def register_llm(model_type):
 
 class ModelServiceError(Exception):
 
+    @log_execution
     def __init__(self,
                  exception: Optional[Exception] = None,
                  code: Optional[str] = None,
@@ -62,19 +64,23 @@ class BaseChatModel(ABC):
     """The base class of LLM"""
 
     @property
+    @log_execution
     def support_multimodal_input(self) -> bool:
         # Does the model support multimodal input natively? It affects how we preprocess the input.
         return False
 
     @property
+    @log_execution
     def support_multimodal_output(self) -> bool:
         # Does the model generate multimodal outputs beyond texts? It affects how we post-process the output.
         return False
 
     @property
+    @log_execution
     def support_audio_input(self) -> bool:
         return False
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         cfg = cfg or {}
         self.model = cfg.get('model', '').strip()
@@ -108,6 +114,7 @@ class BaseChatModel(ABC):
         else:
             self.cache = None
 
+    @log_execution
     def quick_chat(self, prompt: str) -> str:
         *_, responses = self.chat(messages=[Message(role=USER, content=prompt)])
         assert len(responses) == 1
@@ -115,6 +122,7 @@ class BaseChatModel(ABC):
         assert isinstance(responses[0].content, str)
         return responses[0].content
 
+    @log_execution
     def chat(
         self,
         messages: List[Union[Message, Dict]],
@@ -227,6 +235,7 @@ class BaseChatModel(ABC):
                 if k in generate_cfg:
                     del generate_cfg[k]
 
+        @log_execution
         def _call_model_service():
             if fncall_mode:
                 return self._chat_with_functions(
@@ -277,6 +286,7 @@ class BaseChatModel(ABC):
                 generate_cfg['skip_stopword_postproc'] = True
             output = self._postprocess_messages_iterator(output, fncall_mode=fncall_mode, generate_cfg=generate_cfg)
 
+            @log_execution
             def _format_and_cache() -> Iterator[List[Message]]:
                 o = []
                 for o in output:
@@ -289,6 +299,7 @@ class BaseChatModel(ABC):
 
             return self._convert_messages_iterator_to_target_type(_format_and_cache(), _return_message_type)
 
+    @log_execution
     def _chat(
         self,
         messages: List[Union[Message, Dict]],
@@ -302,6 +313,7 @@ class BaseChatModel(ABC):
             return self._chat_no_stream(messages, generate_cfg=generate_cfg)
 
     @abstractmethod
+    @log_execution
     def _chat_with_functions(
         self,
         messages: List[Union[Message, Dict]],
@@ -313,6 +325,7 @@ class BaseChatModel(ABC):
     ) -> Union[List[Message], Iterator[List[Message]]]:
         raise NotImplementedError
 
+    @log_execution
     def _continue_assistant_response(
         self,
         messages: List[Message],
@@ -322,6 +335,7 @@ class BaseChatModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    @log_execution
     def _chat_stream(
         self,
         messages: List[Message],
@@ -331,6 +345,7 @@ class BaseChatModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    @log_execution
     def _chat_no_stream(
         self,
         messages: List[Message],
@@ -338,6 +353,7 @@ class BaseChatModel(ABC):
     ) -> List[Message]:
         raise NotImplementedError
 
+    @log_execution
     def _preprocess_messages(
         self,
         messages: List[Message],
@@ -361,6 +377,7 @@ class BaseChatModel(ABC):
         ]
         return messages
 
+    @log_execution
     def _postprocess_messages(
         self,
         messages: List[Message],
@@ -378,6 +395,7 @@ class BaseChatModel(ABC):
             messages = _postprocess_stop_words(messages, stop=stop)
         return messages
 
+    @log_execution
     def _postprocess_messages_iterator(
         self,
         messages: Iterator[List[Message]],
@@ -389,6 +407,7 @@ class BaseChatModel(ABC):
             yield self._postprocess_messages(pre_msg, fncall_mode=fncall_mode, generate_cfg=generate_cfg)
         logger.debug(f'LLM Output: \n{pformat([_.model_dump() for _ in pre_msg], indent=2)}')
 
+    @log_execution
     def _convert_messages_to_target_type(self, messages: List[Message],
                                          target_type: str) -> Union[List[Message], List[Dict]]:
         if target_type == 'message':
@@ -398,12 +417,14 @@ class BaseChatModel(ABC):
         else:
             raise NotImplementedError
 
+    @log_execution
     def _convert_messages_iterator_to_target_type(
             self, messages_iter: Iterator[List[Message]],
             target_type: str) -> Union[Iterator[List[Message]], Iterator[List[Dict]]]:
         for messages in messages_iter:
             yield self._convert_messages_to_target_type(messages, target_type)
 
+    @log_execution
     def raw_chat(
         self,
         messages: List[Union[Message, Dict]],
@@ -419,6 +440,7 @@ class BaseChatModel(ABC):
             return self._chat_stream(messages=messages, delta_stream=False, generate_cfg=generate_cfg)
 
     @staticmethod
+    @log_execution
     def _conv_qwen_agent_messages_to_oai(messages: List[Union[Message, Dict]]):
         new_messages = []
         for msg in messages:
@@ -449,6 +471,7 @@ class BaseChatModel(ABC):
                 new_messages.append(msg)
         return new_messages
 
+    @log_execution
     def quick_chat_oai(self, messages: List[dict], tools: Optional[list] = None) -> dict:
         """
         This is a temporary OpenAI-compatible interface that is encapsulated and may change at any time.
@@ -458,6 +481,7 @@ class BaseChatModel(ABC):
         - Only supports text LLM
         """
 
+        @log_execution
         def _convert_to_qwen_agent_messages(messages):
             new_messages = []
             for msg in messages:
@@ -488,6 +512,7 @@ class BaseChatModel(ABC):
                             })
             return new_messages
 
+        @log_execution
         def _convert_to_oai_message(data):
             message = {'role': 'assistant', 'content': '', 'reasoning_content': '', 'tool_calls': []}
 
@@ -624,11 +649,13 @@ def _truncate_input_messages_roughly(messages: List[Message], max_tokens: int) -
                     message='The input messages (excluding the system message) must start with a user message.',
                 )
 
+    @log_execution
     def _count_tokens(msg: Message) -> int:
         if msg.role == ASSISTANT and msg.function_call:
             return tokenizer.count_tokens(f'{msg.function_call}')
         return tokenizer.count_tokens(extract_text_from_message(msg, add_upload_info=True))
 
+    @log_execution
     def _truncate_message(msg: Message, max_tokens: int, keep_both_sides: bool = False):
         if isinstance(msg.content, str):
             content = tokenizer.truncate(msg.content, max_token=max_tokens, keep_both_sides=keep_both_sides)
@@ -642,6 +669,7 @@ def _truncate_input_messages_roughly(messages: List[Message], max_tokens: int) -
             content = tokenizer.truncate(text, max_token=max_tokens, keep_both_sides=keep_both_sides)
         return Message(role=msg.role, content=content)
 
+    @log_execution
     def _truncate_turn(indexed_messages1: list, message_tokens1: dict, exceedance: int, is_last_turn: bool):
         # ******* rm this turn *******
         all_tokens = 0

@@ -42,6 +42,7 @@ class ExtractDocVocabulary(BaseTool):
         'required': ['files'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.simple_doc_parse = SimpleDocParser()
@@ -49,6 +50,7 @@ class ExtractDocVocabulary(BaseTool):
         self.data_root = self.cfg.get('path', os.path.join(DEFAULT_WORKSPACE, 'tools', self.name))
         self.db = Storage({'storage_root_path': self.data_root})
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> str:
         params = self._verify_json_format_args(params)
         files = params.get('files', [])

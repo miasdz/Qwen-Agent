@@ -50,6 +50,7 @@ Thought: """
 class ReActChat(FnCallAgent):
     """This agent use ReAct format to call tools"""
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -70,6 +71,7 @@ class ReActChat(FnCallAgent):
             new_generate_cfg={'stop': ['Observation:', 'Observation:\n']},
         )
 
+    @log_execution
     def _run(self, messages: List[Message], lang: Literal['en', 'zh'] = 'en', **kwargs) -> Iterator[List[Message]]:
         text_messages = self._prepend_react_prompt(messages, lang=lang)
 
@@ -106,6 +108,7 @@ class ReActChat(FnCallAgent):
                 action_input = '\n' + action_input
             text_messages[-1].content += thought + f'\nAction: {action}\nAction Input: {action_input}' + observation
 
+    @log_execution
     def _prepend_react_prompt(self, messages: List[Message], lang: Literal['en', 'zh']) -> List[Message]:
         tool_descs = []
         for f in self.function_map.values():

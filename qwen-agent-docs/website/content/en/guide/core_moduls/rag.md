@@ -48,3 +48,5 @@ pip install "qwen-agent[rag]"
 ---
 
 > In summary, Qwen-Agent’s RAG implementation offers a lightweight yet effective retrieval system based on document chunking and BM25 keyword matching—ideal for augmenting LLM responses with precise, source-grounded information without requiring embeddings or vector databases.
+
+![img.png](img.png)

@@ -31,11 +31,13 @@ from qwen_agent.tools.base import BaseTool
 class MCPManager:
     _instance = None  # Private class variable to store the unique instance
 
+    @log_execution
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(MCPManager, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
+    @log_execution
     def __init__(self):
         if not hasattr(self, 'clients'):  # The singleton should only be inited once
             """Set a new event loop in a separate thread"""
@@ -54,6 +56,7 @@ class MCPManager:
             self.processes = []
             self.monkey_patch_mcp_create_platform_compatible_process()
 
+    @log_execution
     def monkey_patch_mcp_create_platform_compatible_process(self):
         try:
             import mcp.client.stdio
@@ -70,10 +73,12 @@ class MCPManager:
 
         mcp.client.stdio._create_platform_compatible_process = _monkey_patched_create_platform_compatible_process
 
+    @log_execution
     def start_loop(self):
         asyncio.set_event_loop(self.loop)
 
         # Set a global exception handler to silently handle cross-task exceptions from MCP SSE connections
+        @log_execution
         def exception_handler(loop, context):
             exception = context.get('exception')
             if exception:
@@ -91,6 +96,7 @@ class MCPManager:
         self.loop.set_exception_handler(exception_handler)
         self.loop.run_forever()
 
+    @log_execution
     def is_valid_mcp_servers(self, config: dict):
         """Example of mcp servers configuration:
         {
@@ -136,6 +142,7 @@ class MCPManager:
                 return False
         return True
 
+    @log_execution
     def initConfig(self, config: Dict):
         if not self.is_valid_mcp_servers(config):
             raise ValueError('Config of mcpservers is not valid')
@@ -262,6 +269,7 @@ class MCPManager:
 
         return tools
 
+    @log_execution
     def create_tool_class(self, register_name, register_client_id, tool_name, tool_desc, tool_parameters):
 
         class ToolClass(BaseTool):
@@ -270,6 +278,7 @@ class MCPManager:
             parameters = tool_parameters
             client_id = register_client_id
 
+            @log_execution
             def call(self, params: Union[str, dict], **kwargs) -> str:
                 tool_args = json.loads(params)
                 # Submit coroutine to the event loop and wait for the result
@@ -286,6 +295,7 @@ class MCPManager:
         ToolClass.__name__ = f'{register_name}_Class'
         return ToolClass()
 
+    @log_execution
     def shutdown(self):
         futures = []
         for client_id in list(self.clients.keys()):
@@ -312,6 +322,7 @@ class MCPManager:
 
 class MCPClient:
 
+    @log_execution
     def __init__(self):
         from mcp import ClientSession
         self.session: Optional[ClientSession] = None

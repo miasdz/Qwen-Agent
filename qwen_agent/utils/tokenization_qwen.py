@@ -59,6 +59,7 @@ class QWenTokenizer:
 
     vocab_files_names = VOCAB_FILES_NAMES
 
+    @log_execution
     def __init__(
         self,
         vocab_file=None,
@@ -109,12 +110,14 @@ class QWenTokenizer:
         self.im_start_id = self.special_tokens[IMSTART]
         self.im_end_id = self.special_tokens[IMEND]
 
+    @log_execution
     def __getstate__(self):
         # for pickle lovers
         state = self.__dict__.copy()
         del state['tokenizer']
         return state
 
+    @log_execution
     def __setstate__(self, state):
         # tokenizer is not python native; don't pass it; rebuild it
         self.__dict__.update(state)
@@ -126,12 +129,15 @@ class QWenTokenizer:
         )
         self.tokenizer = enc
 
+    @log_execution
     def __len__(self) -> int:
         return self.tokenizer.n_vocab
 
+    @log_execution
     def get_vocab(self) -> Dict[bytes, int]:
         return self.mergeable_ranks
 
+    @log_execution
     def convert_tokens_to_ids(self, tokens: Union[bytes, str, List[Union[bytes, str]]]) -> List[int]:
         ids = []
         if isinstance(tokens, (str, bytes)):
@@ -146,6 +152,7 @@ class QWenTokenizer:
                 ids.append(self.mergeable_ranks.get(token))
         return ids
 
+    @log_execution
     def tokenize(
             self,
             text: str,
@@ -176,6 +183,7 @@ class QWenTokenizer:
             tokens.append(self.decoder[t])
         return tokens
 
+    @log_execution
     def convert_tokens_to_string(self, tokens: List[Union[bytes, str]]) -> str:
         """
         Converts a sequence of tokens in a single string.
@@ -197,6 +205,7 @@ class QWenTokenizer:
         return text
 
     @property
+    @log_execution
     def vocab_size(self):
         return self.tokenizer.n_vocab
 

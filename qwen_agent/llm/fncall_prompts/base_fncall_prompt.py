@@ -21,6 +21,7 @@ from qwen_agent.utils.utils import format_as_multimodal_message, format_as_text_
 class BaseFnCallPrompt(object):
 
     @staticmethod
+    @log_execution
     def preprocess_fncall_messages(messages: List[Message],
                                    functions: List[dict],
                                    lang: Literal['en', 'zh'],
@@ -35,6 +36,7 @@ class BaseFnCallPrompt(object):
         raise NotImplementedError
 
     @staticmethod
+    @log_execution
     def postprocess_fncall_messages(messages: List[Message],
                                     parallel_function_calls: bool = True,
                                     function_choice: Union[Literal['auto'], str] = 'auto',
@@ -45,6 +47,7 @@ class BaseFnCallPrompt(object):
         """
         raise NotImplementedError
 
+    @log_execution
     def format_plaintext_train_samples(
         self,
         messages: List[Union[Message, dict]],

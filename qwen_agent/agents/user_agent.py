@@ -22,5 +22,6 @@ PENDING_USER_INPUT = '<!-- INTERRUPT: PENDING_USER_INPUT -->'
 
 class UserAgent(Agent):
 
+    @log_execution
     def _run(self, messages: List[Message], **kwargs) -> Iterator[List[Message]]:
         yield [Message(role='user', content=PENDING_USER_INPUT, name=self.name)]

@@ -36,6 +36,7 @@ class GenericRuntime:
     LOCAL_DICT = None
     HEADERS = []
 
+    @log_execution
     def __init__(self):
         self._global_vars = copy.copy(self.GLOBAL_DICT)
         self._local_vars = copy.copy(self.LOCAL_DICT) if self.LOCAL_DICT else None
@@ -43,19 +44,23 @@ class GenericRuntime:
         for c in self.HEADERS:
             self.exec_code(c)
 
+    @log_execution
     def exec_code(self, code_piece: str) -> None:
         if regex.search(r'(\s|^)?input\(', code_piece) or regex.search(r'(\s|^)?os.system\(', code_piece):
             raise RuntimeError()
         exec(code_piece, self._global_vars)
 
+    @log_execution
     def eval_code(self, expr: str) -> Any:
         return eval(expr, self._global_vars)
 
+    @log_execution
     def inject(self, var_dict: Dict[str, Any]) -> None:
         for k, v in var_dict.items():
             self._global_vars[k] = v
 
     @property
+    @log_execution
     def answer(self):
         return self._global_vars['answer']
 
@@ -71,6 +76,7 @@ class DateRuntime(GenericRuntime):
 
 class CustomDict(dict):
 
+    @log_execution
     def __iter__(self):
         return list(super().__iter__()).__iter__()
 
@@ -107,6 +113,7 @@ class PythonExecutor(BaseTool):
         'required': ['code'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         _check_deps_for_python_executor()
         import multiprocess
@@ -126,6 +133,7 @@ class PythonExecutor(BaseTool):
         self.pool = Pool(multiprocess.cpu_count())
         self.timeout_length = timeout_length
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> list:
         try:
             params = json5.loads(params)
@@ -139,13 +147,16 @@ class PythonExecutor(BaseTool):
         predictions = self.apply(code)
         return predictions
 
+    @log_execution
     def apply(self, code: str) -> list:
         return self.batch_apply([code])[0]
 
+    @log_execution
     def process_generation_to_code(self, gens: str):
         return [g.split('\n') for g in gens]
 
     @staticmethod
+    @log_execution
     def execute(
         code,
         get_answer_from_stdout=None,
@@ -180,12 +191,14 @@ class PythonExecutor(BaseTool):
         return result, report
 
     @staticmethod
+    @log_execution
     def truncate(s, max_length=256):
         half = max_length // 2
         if len(s) > max_length:
             s = s[:half] + '...' + s[-half:]
         return s
 
+    @log_execution
     def batch_apply(self, batch_code: List[str]) -> list:
         from pebble import ProcessPool
         all_code_snippets = self.process_generation_to_code(batch_code)

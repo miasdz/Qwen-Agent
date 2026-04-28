@@ -34,9 +34,11 @@ class Chunk(BaseModel):
     metadata: dict
     token: int
 
+    @log_execution
     def __init__(self, content: str, metadata: dict, token: int):
         super().__init__(content=content, metadata=metadata, token=token)
 
+    @log_execution
     def to_dict(self) -> dict:
         return {'content': self.content, 'metadata': self.metadata, 'token': self.token}
 
@@ -46,9 +48,11 @@ class Record(BaseModel):
     raw: List[Chunk]
     title: str
 
+    @log_execution
     def __init__(self, url: str, raw: List[Chunk], title: str):
         super().__init__(url=url, raw=raw, title=title)
 
+    @log_execution
     def to_dict(self) -> dict:
         return {'url': self.url, 'raw': [x.to_dict() for x in self.raw], 'title': self.title}
 
@@ -67,6 +71,7 @@ class DocParser(BaseTool):
         'required': ['url'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.max_ref_token: int = self.cfg.get('max_ref_token', DEFAULT_MAX_REF_TOKEN)
@@ -77,6 +82,7 @@ class DocParser(BaseTool):
 
         self.doc_extractor = SimpleDocParser({'structured_doc': True})
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> dict:
         """Extracting and blocking
 
@@ -149,6 +155,7 @@ class DocParser(BaseTool):
         self.db.put(cached_name_chunking, new_record_str)
         return new_record
 
+    @log_execution
     def split_doc_to_chunk(self,
                            doc: List[dict],
                            path: str,
@@ -272,6 +279,7 @@ class DocParser(BaseTool):
 
         return res
 
+    @log_execution
     def _get_last_part(self, chunk: list) -> str:
         overlap = ''
         need_page = chunk[-1][1]  # Only need this page to prepend

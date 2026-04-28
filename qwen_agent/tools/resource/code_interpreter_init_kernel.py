@@ -44,6 +44,7 @@ except AttributeError:  # windows
 class _M6CountdownTimer:
 
     @classmethod
+    @log_execution
     def start(cls, timeout: int):
         try:
             signal.alarm(timeout)
@@ -51,6 +52,7 @@ class _M6CountdownTimer:
             pass  # I haven't found a timeout solution that works with windows + jupyter yet.
 
     @classmethod
+    @log_execution
     def cancel(cls):
         try:
             signal.alarm(0)

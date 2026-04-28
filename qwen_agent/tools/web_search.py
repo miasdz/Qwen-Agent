@@ -37,6 +37,7 @@ class WebSearch(BaseTool):
         'required': ['query'],
     }
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> str:
         params = self._verify_json_format_args(params)
         query = params['query']
@@ -46,6 +47,7 @@ class WebSearch(BaseTool):
         return formatted_results
 
     @staticmethod
+    @log_execution
     def search(query: str) -> List[Any]:
         if not SERPER_API_KEY:
             raise ValueError(
@@ -59,6 +61,7 @@ class WebSearch(BaseTool):
         return response.json()['organic']
 
     @staticmethod
+    @log_execution
     def _format_results(search_results: List[Any]) -> str:
         content = '```\n{}\n```'.format('\n\n'.join([
             f"[{i}]\"{doc['title']}\n{doc.get('snippet', '')}\"{doc.get('date', '')}"

@@ -27,6 +27,7 @@ DEFAULT_FRONT_PAGE_NUM = 2
 @register_tool('front_page_search')
 class FrontPageSearch(BaseSearch):
 
+    @log_execution
     def sort_by_scores(self,
                        query: str,
                        docs: List[Record],

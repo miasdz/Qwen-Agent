@@ -81,6 +81,7 @@ def format_knowledge_to_source_and_content(result: Union[str, List[dict]]) -> Li
 class Assistant(FnCallAgent):
     """This is a widely applicable agent integrated with RAG capabilities and function call ability."""
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -97,6 +98,7 @@ class Assistant(FnCallAgent):
                          files=files,
                          rag_cfg=rag_cfg)
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              lang: Literal['en', 'zh'] = 'en',
@@ -113,6 +115,7 @@ class Assistant(FnCallAgent):
         new_messages = self._prepend_knowledge_prompt(messages=messages, lang=lang, knowledge=knowledge, **kwargs)
         return super()._run(messages=new_messages, lang=lang, **kwargs)
 
+    @log_execution
     def _prepend_knowledge_prompt(self,
                                   messages: List[Message],
                                   lang: Literal['en', 'zh'] = 'en',

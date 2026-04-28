@@ -35,6 +35,7 @@ Reply: ... # 选中的帮手的回复
 
 class Router(Assistant, MultiAgentHub):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -58,6 +59,7 @@ class Router(Assistant, MultiAgentHub):
             new_generate_cfg={'stop': ['Reply:', 'Reply:\n']},
         )
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         # This is a temporary plan to determine the source of a message
         messages_for_router = []
@@ -90,6 +92,7 @@ class Router(Assistant, MultiAgentHub):
                 yield response
 
     @staticmethod
+    @log_execution
     def supplement_name_special_token(message: Message) -> Message:
         message = copy.deepcopy(message)
         if not message.name:

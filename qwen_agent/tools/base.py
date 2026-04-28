@@ -26,6 +26,7 @@ TOOL_REGISTRY = {}
 
 class ToolServiceError(Exception):
 
+    @log_execution
     def __init__(self,
                  exception: Optional[Exception] = None,
                  code: Optional[str] = None,
@@ -43,6 +44,7 @@ class ToolServiceError(Exception):
 
 def register_tool(name, allow_overwrite=False):
 
+    @log_execution
     def decorator(cls):
         if name in TOOL_REGISTRY:
             if allow_overwrite:
@@ -111,6 +113,7 @@ class BaseTool(ABC):
     description: str = ''
     parameters: Union[List[dict], dict] = []
 
+    @log_execution
     def __init__(self, cfg: Optional[dict] = None):
         self.cfg = cfg or {}
         if not self.name:
@@ -123,6 +126,7 @@ class BaseTool(ABC):
                     'The parameters, when provided as a dict, must confirm to a valid openai-compatible JSON schema.')
 
     @abstractmethod
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> Union[str, list, dict, List[ContentItem]]:
         """The interface for calling tools.
 
@@ -137,6 +141,7 @@ class BaseTool(ABC):
         """
         raise NotImplementedError
 
+    @log_execution
     def _verify_json_format_args(self, params: Union[str, dict], strict_json: bool = False) -> dict:
         """Verify the parameters of the function call"""
         if isinstance(params, str):
@@ -162,6 +167,7 @@ class BaseTool(ABC):
         return params_json
 
     @property
+    @log_execution
     def function(self) -> dict:  # Bad naming. It should be `function_info`.
         return {
             # 'name_for_human': self.name_for_human,
@@ -172,10 +178,12 @@ class BaseTool(ABC):
         }
 
     @property
+    @log_execution
     def name_for_human(self) -> str:
         return self.cfg.get('name_for_human', self.name)
 
     @property
+    @log_execution
     def args_format(self) -> str:
         fmt = self.cfg.get('args_format')
         if fmt is None:
@@ -186,12 +194,14 @@ class BaseTool(ABC):
         return fmt
 
     @property
+    @log_execution
     def file_access(self) -> bool:
         return False
 
 
 class BaseToolWithFileAccess(BaseTool, ABC):
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         assert self.name
@@ -199,9 +209,11 @@ class BaseToolWithFileAccess(BaseTool, ABC):
         self.work_dir: str = self.cfg.get('work_dir', default_work_dir)
 
     @property
+    @log_execution
     def file_access(self) -> bool:
         return True
 
+    @log_execution
     def call(self, params: Union[str, dict], files: List[str] = None, **kwargs) -> str:
         # Copy remote files to the working directory:
         if files:

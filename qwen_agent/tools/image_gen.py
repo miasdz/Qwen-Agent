@@ -36,6 +36,7 @@ class ImageGen(BaseTool):
         'required': ['prompt'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         llm_cfg = self.cfg.get('llm_cfg', {})
@@ -44,6 +45,7 @@ class ImageGen(BaseTool):
         self.llm = get_chat_model(llm_cfg)
         self.size = self.cfg.get('size', '1024*1024')
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> List[ContentItem]:
         if isinstance(params, str):
             params = json.loads(params)

@@ -27,6 +27,7 @@ DEFAULT_DESC = 'This agent can utilize tools to retrieve useful information from
 
 class VirtualMemoryAgent(Assistant):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -45,6 +46,7 @@ class VirtualMemoryAgent(Assistant):
                          files=files,
                          rag_cfg=rag_cfg)
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         ori_messages = messages
         messages = copy.deepcopy(messages)
@@ -77,6 +79,7 @@ class VirtualMemoryAgent(Assistant):
             else:
                 break
 
+    @log_execution
     def _format_file(self, messages: List[Message], lang: str = 'en') -> List[Message]:
         if lang == 'en':
             file_prefix = '[file]({f_name})'

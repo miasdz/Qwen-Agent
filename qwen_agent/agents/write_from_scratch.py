@@ -33,6 +33,7 @@ def is_roman_numeral(s):
 
 class WriteFromScratch(Agent):
 
+    @log_execution
     def _run(self, messages: List[Message], knowledge: str = '', lang: str = 'en') -> Iterator[List[Message]]:
 
         response = [Message(ASSISTANT, f'>\n> Use Default plans: \n{default_plan}')]

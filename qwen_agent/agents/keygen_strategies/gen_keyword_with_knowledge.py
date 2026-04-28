@@ -55,6 +55,7 @@ Keywords:
         'en': PROMPT_TEMPLATE_EN,
     }
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -62,6 +63,7 @@ Keywords:
                  **kwargs):
         super().__init__(['extract_doc_vocabulary'] + (function_list or []), llm, system_message, **kwargs)
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              files: Optional[List[str]] = None,

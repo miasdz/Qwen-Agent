@@ -35,14 +35,17 @@ from qwen_agent.utils.utils import hash_sha256, save_audio_to_file
 class QwenVLChatAtDS(BaseFnCallModel):
 
     @property
+    @log_execution
     def support_multimodal_input(self) -> bool:
         return True
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'qwen-vl-max'
         initialize_dashscope(cfg)
 
+    @log_execution
     def _chat_stream(
         self,
         messages: List[Message],
@@ -179,6 +182,7 @@ class QwenVLChatAtDS(BaseFnCallModel):
             yield res
         logger.debug(f'LLM Output: \n{pformat([_.model_dump() for _ in res], indent=2)}')
 
+    @log_execution
     def _chat_no_stream(
         self,
         messages: List[Message],
@@ -218,6 +222,7 @@ class QwenVLChatAtDS(BaseFnCallModel):
                                     message=response.message,
                                     extra={'model_service_info': response})
 
+    @log_execution
     def _continue_assistant_response(
         self,
         messages: List[Message],

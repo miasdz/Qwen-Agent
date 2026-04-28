@@ -22,9 +22,11 @@ from qwen_agent.llm.qwenvl_dashscope import QwenVLChatAtDS
 class QwenAudioChatAtDS(QwenVLChatAtDS):
 
     @property
+    @log_execution
     def support_multimodal_input(self) -> bool:
         return True
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'qwen-audio-turbo-latest'

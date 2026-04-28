@@ -47,6 +47,7 @@ RAG_CHUNK_SIZE = 300
 
 class ParallelDocQA(Assistant):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -73,6 +74,7 @@ class ParallelDocQA(Assistant):
         self.doc_parse = DocParser()
         self.summary_agent = ParallelDocQASummary(llm=self.llm)
 
+    @log_execution
     def _get_files(self, messages: List[Message]):
         session_files = extract_files_from_messages(messages, include_images=False)
         valid_files = []
@@ -82,6 +84,7 @@ class ParallelDocQA(Assistant):
                 valid_files.append(file)
         return valid_files
 
+    @log_execution
     def _parse_and_chunk_files(self, messages: List[Message]):
         valid_files = self._get_files(messages)
         records = []
@@ -94,6 +97,7 @@ class ParallelDocQA(Assistant):
             records.append(_record)
         return records
 
+    @log_execution
     def _retrieve_according_to_member_responses(
         self,
         messages: List[Message],
@@ -160,6 +164,7 @@ class ParallelDocQA(Assistant):
         retrieve_res = '\n\n'.join(snippets)
         return retrieve_res
 
+    @log_execution
     def _is_none_response(self, text: str) -> bool:
         none_response_list = ['很抱歉', NO_RESPONSE, "\"res\": \"none\""]
         for none_response in none_response_list:
@@ -167,6 +172,7 @@ class ParallelDocQA(Assistant):
                 return True
         return False
 
+    @log_execution
     def _extract_text_from_output(self, output):
         # Remove symbols and keywords from the JSON structure using regular expressions
         cleaned_output = re.sub(r'[{}"]|("res":\s*"ans"|"res":\s*"none"|"\s*content":\s*)', '', output)
@@ -174,6 +180,7 @@ class ParallelDocQA(Assistant):
         # cleaned_output = re.sub(r'\s*,\s*|\{no_response\}', '', cleaned_output).strip()
         return cleaned_output
 
+    @log_execution
     def _parser_json(self, content):
         content = content.strip()
         if content.startswith('```json'):
@@ -186,6 +193,7 @@ class ParallelDocQA(Assistant):
         except Exception:
             return False, content
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
 
         messages = copy.deepcopy(messages)
@@ -251,6 +259,7 @@ class ParallelDocQA(Assistant):
                                                                         member_res=member_res)
         return self.summary_agent.run(messages=messages, lang=lang, knowledge=retrieve_content)
 
+    @log_execution
     def _ask_member_agent(self,
                           index: int,
                           messages: List[Message],

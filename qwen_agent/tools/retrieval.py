@@ -63,6 +63,7 @@ class Retrieval(BaseTool):
         'required': ['query', 'files'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.max_ref_token: int = self.cfg.get('max_ref_token', DEFAULT_MAX_REF_TOKEN)
@@ -76,6 +77,7 @@ class Retrieval(BaseTool):
             from qwen_agent.tools.search_tools.hybrid_search import HybridSearch
             self.search = HybridSearch({'max_ref_token': self.max_ref_token, 'rag_searchers': self.rag_searchers})
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> list:
         """RAG tool.
 

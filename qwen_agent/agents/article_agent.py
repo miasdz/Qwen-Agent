@@ -26,6 +26,7 @@ class ArticleAgent(Assistant):
     It can write a thematic essay or continue writing an article based on reference materials
     """
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              lang: str = 'en',

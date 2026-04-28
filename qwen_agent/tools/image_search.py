@@ -53,6 +53,7 @@ class ImageResult(BaseModel):
     height: str = Field(..., description='Image height in pixels')
     content: str = Field(default='', description='Additional content or description')
 
+    @log_execution
     def __str__(self):
         result = {}
         if self.id:
@@ -66,9 +67,11 @@ class ImageResult(BaseModel):
 
         return json.dumps(result, ensure_ascii=False)
 
+    @log_execution
     def __getitem__(self, item):
         return getattr(self, item)
 
+    @log_execution
     def __setitem__(self, key, value):
         setattr(self, key, value)
 
@@ -150,6 +153,7 @@ class ImageSearch(BaseTool):
         'required': ['img_idx']
     }
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> str:
         params = self._verify_json_format_args(params)
         image_id = int(params['img_idx'])

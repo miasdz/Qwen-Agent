@@ -35,6 +35,7 @@ DEFAULT_HUMAN_SIMULATOR_PROMPT = """"Play a game where you act as the human user
 
 class HumanSimulator(Agent):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -51,6 +52,7 @@ class HumanSimulator(Agent):
                          description=description,
                          **kwargs)
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         if (not messages) or (messages[0].role != 'user'):
             begin_msg = 'Please role-play as a human user and make your first request.\n\nBegin!'

@@ -24,6 +24,7 @@ from qwen_agent.utils.utils import extract_text_from_message
 class QwenFnCallPrompt(BaseFnCallPrompt):
 
     @staticmethod
+    @log_execution
     def preprocess_fncall_messages(messages: List[Message],
                                    functions: List[dict],
                                    lang: Literal['en', 'zh'],
@@ -110,6 +111,7 @@ class QwenFnCallPrompt(BaseFnCallPrompt):
         return messages
 
     @staticmethod
+    @log_execution
     def postprocess_fncall_messages(messages: List[Message],
                                     parallel_function_calls: bool = True,
                                     function_choice: Union[Literal['auto'], str] = 'auto',

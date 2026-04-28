@@ -32,6 +32,7 @@ class WebExtractor(BaseTool):
         'required': ['url'],
     }
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> str:
         params = self._verify_json_format_args(params)
         url = params['url']

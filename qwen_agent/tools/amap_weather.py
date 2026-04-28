@@ -34,6 +34,7 @@ class AmapWeather(BaseTool):
         'required': ['location'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
 
@@ -48,6 +49,7 @@ class AmapWeather(BaseTool):
         assert self.token != '', 'weather api token must be acquired through ' \
             'https://lbs.amap.com/api/webservice/guide/create-project/get-key and set by AMAP_TOKEN'
 
+    @log_execution
     def get_city_adcode(self, city_name):
         filtered_df = self.city_df[self.city_df['中文名'] == city_name]
         if len(filtered_df['adcode'].values) == 0:
@@ -56,6 +58,7 @@ class AmapWeather(BaseTool):
         else:
             return filtered_df['adcode'].values[0]
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> str:
         params = self._verify_json_format_args(params)
 

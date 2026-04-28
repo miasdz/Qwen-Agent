@@ -56,6 +56,7 @@ def extract_program(result: str, last_only=True):
 class TIRMathAgent(FnCallAgent):
     """TIR(tool-integrated reasoning) agent"""
 
+    @log_execution
     def __init__(self,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
                  system_message: Optional[str] = DEFAULT_SYSTEM_MESSAGE,
@@ -73,6 +74,7 @@ class TIRMathAgent(FnCallAgent):
             new_generate_cfg={'stop': [OBS_START]},
         )
 
+    @log_execution
     def _run(self, messages: List[Message], lang: Literal['en', 'zh'] = 'en', **kwargs) -> Iterator[List[Message]]:
         text_messages = copy.deepcopy(messages)
         num_llm_calls_available = MAX_LLM_CALL_PER_RUN
@@ -127,6 +129,7 @@ class TIRMathAgent(FnCallAgent):
             else:
                 text_messages.append(current_rsp)
 
+    @log_execution
     def _detect_tool(self, text: str) -> Tuple[bool, str, str, str]:
         program = extract_program(text)
         if program:

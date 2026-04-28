@@ -24,6 +24,7 @@ from qwen_agent.tools.search_tools.front_page_search import POSITIVE_INFINITY
 @register_tool('hybrid_search')
 class HybridSearch(BaseSearch):
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.rag_searchers = self.cfg.get('rag_searchers', DEFAULT_RAG_SEARCHERS)
@@ -32,6 +33,7 @@ class HybridSearch(BaseSearch):
             raise ValueError(f'{self.name} can not be in `rag_searchers` = {self.rag_searchers}')
         self.search_objs = [TOOL_REGISTRY[name](cfg) for name in self.rag_searchers]
 
+    @log_execution
     def sort_by_scores(self, query: str, docs: List[Record], **kwargs) -> List[Tuple[str, int, float]]:
         chunk_and_score_list = []
         for s_obj in self.search_objs:

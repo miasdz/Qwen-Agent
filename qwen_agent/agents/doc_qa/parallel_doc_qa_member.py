@@ -115,6 +115,7 @@ PROMPT_TEMPLATE = {
 
 class ParallelDocQAMember(Agent):
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -126,6 +127,7 @@ class ParallelDocQAMember(Agent):
             new_generate_cfg={'stop': ['Observation:', 'Observation:\n']},
         )
 
+    @log_execution
     def _run(self,
              messages: List[Message],
              knowledge: str = '',

@@ -37,6 +37,7 @@ class Transformers(BaseFnCallModel):
         }
         bot = Assistant(llm=llm_cfg, ...)
     """
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
 
@@ -71,18 +72,22 @@ class Transformers(BaseFnCallModel):
         self.hf_model = model_cls.from_pretrained(cfg['model'], config=self.hf_config, torch_dtype='auto').to(cfg.get('device', 'cpu'))
 
     @property
+    @log_execution
     def support_multimodal_input(self) -> bool:
         return self._support_multimodal_input
     
     @property
+    @log_execution
     def support_audio_input(self) -> bool:
         return self._support_multimodal_input
 
+    @log_execution
     def _get_streamer(self):
         from transformers import TextIteratorStreamer
 
         return TextIteratorStreamer(self.tokenizer, timeout=60.0, skip_prompt=True, skip_special_tokens=True)
 
+    @log_execution
     def _get_inputs(self, messages: List[Message]):
         import torch
         
@@ -132,6 +137,7 @@ class Transformers(BaseFnCallModel):
                 inputs[k] = v.to(self.hf_model.device)
         return inputs
 
+    @log_execution
     def _chat_stream(
         self,
         messages: List[Message],
@@ -153,6 +159,7 @@ class Transformers(BaseFnCallModel):
             set_seed(generate_cfg['seed'])
             del generate_cfg['seed']
 
+        @log_execution
         def generate_and_signal_complete():
             self.hf_model.generate(**generate_cfg)
 
@@ -166,6 +173,7 @@ class Transformers(BaseFnCallModel):
             else:
                 yield [Message(ASSISTANT, partial_text)]
 
+    @log_execution
     def _chat_no_stream(
         self,
         messages: List[Message],

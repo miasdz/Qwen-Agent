@@ -38,6 +38,7 @@ def clean_paragraph(text):
 
 class DocParserError(Exception):
 
+    @log_execution
     def __init__(self,
                  exception: Optional[Exception] = None,
                  code: Optional[str] = None,
@@ -126,6 +127,7 @@ def parse_txt(path: str):
 
 def df_to_md(df) -> str:
 
+    @log_execution
     def replace_long_dashes(text):
         if text.replace('-', '').replace(':', '').strip():
             return text
@@ -203,6 +205,7 @@ def parse_html_bs(path: str, extract_image: bool = False):
     if extract_image:
         raise ValueError('Currently, extracting images is not supported!')
 
+    @log_execution
     def pre_process_html(s):
         # replace multiple newlines
         s = re.sub('\n+', '\n', s)
@@ -392,6 +395,7 @@ class SimpleDocParser(BaseTool):
         'required': ['url'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.data_root = self.cfg.get('path', os.path.join(DEFAULT_WORKSPACE, 'tools', self.name))
@@ -400,6 +404,7 @@ class SimpleDocParser(BaseTool):
 
         self.db = Storage({'storage_root_path': self.data_root})
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> Union[str, list]:
         """Parse pdf by url, and return the formatted content.
 

@@ -30,9 +30,11 @@ from qwen_agent.utils.utils import encode_audio_as_base64, encode_image_as_base6
 class QwenVLChatAtOAI(TextChatAtOAI):
 
     @property
+    @log_execution
     def support_multimodal_input(self) -> bool:
         return True
 
+    @log_execution
     def convert_messages_to_dicts(self, messages: List[Message]) -> List[dict]:
         new_messages = []
 

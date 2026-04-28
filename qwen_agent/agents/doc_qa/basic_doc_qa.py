@@ -40,6 +40,7 @@ PROMPT_TEMPLATE = {
 class BasicDocQA(Assistant):
     """This is an agent for doc QA."""
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -56,6 +57,7 @@ class BasicDocQA(Assistant):
                          files=files,
                          rag_cfg=rag_cfg)
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         """This agent using different doc qa prompt with Assistant"""
         # Need to use Memory agent for data management

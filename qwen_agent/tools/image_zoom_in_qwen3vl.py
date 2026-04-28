@@ -61,18 +61,22 @@ class ImageZoomInToolQwen3VL(BaseToolWithFileAccess):
     }
 
     # Image resizing functions (copied from qwen-vl-utils)
+    @log_execution
     def round_by_factor(self, number: int, factor: int) -> int:
         """Returns the closest integer to 'number' that is divisible by 'factor'."""
         return round(number / factor) * factor
 
+    @log_execution
     def ceil_by_factor(self, number: int, factor: int) -> int:
         """Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'."""
         return math.ceil(number / factor) * factor
 
+    @log_execution
     def floor_by_factor(self, number: int, factor: int) -> int:
         """Returns the largest integer less than or equal to 'number' that is divisible by 'factor'."""
         return math.floor(number / factor) * factor
 
+    @log_execution
     def smart_resize(self,
                      height: int,
                      width: int,
@@ -92,6 +96,7 @@ class ImageZoomInToolQwen3VL(BaseToolWithFileAccess):
             w_bar = self.ceil_by_factor(width * beta, factor)
         return h_bar, w_bar
 
+    @log_execution
     def maybe_resize_bbox(self, left, top, right, bottom, img_width, img_height):
         """Resize bbox to ensure it's valid"""
         left = max(0, left)
@@ -125,6 +130,7 @@ class ImageZoomInToolQwen3VL(BaseToolWithFileAccess):
                 return [new_left, new_top, new_right, new_bottom]
         return [left, top, right, bottom]
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> List[ContentItem]:
         params = self._verify_json_format_args(params)
 

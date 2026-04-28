@@ -27,6 +27,7 @@ from qwen_agent.utils.utils import extract_files_from_messages
 class FnCallAgent(Agent):
     """This is a widely applicable function call agent integrated with llm and tool use ability."""
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
@@ -35,17 +36,26 @@ class FnCallAgent(Agent):
                  description: Optional[str] = None,
                  files: Optional[List[str]] = None,
                  **kwargs):
-        """Initialization the agent.
+        """初始化函数调用代理（FnCallAgent）。
+
+        该代理是一个通用的函数调用代理，集成了大语言模型和工具使用能力。
+        支持通过配置文件列表来管理初始化的文件，并使用 Memory 模块进行文件管理。
 
         Args:
-            function_list: One list of tool name, tool configuration or Tool object,
-              such as 'code_interpreter', {'name': 'code_interpreter', 'timeout': 10}, or CodeInterpreter().
-            llm: The LLM model configuration or LLM model object.
-              Set the configuration as {'model': '', 'api_key': '', 'model_server': ''}.
-            system_message: The specified system message for LLM chat.
-            name: The name of this agent.
-            description: The description of this agent, which will be used for multi_agent.
-            files: A file url list. The initialized files for the agent.
+            function_list: 可选的工具列表，支持以下类型：
+                - 工具名称字符串，如 'code_interpreter'
+                - 工具配置字典，如 {'name': 'code_interpreter', 'timeout': 10}
+                - BaseTool 实例对象，如 CodeInterpreter()
+            llm: 大语言模型的配置或实例对象。
+                配置格式示例：{'model': '', 'api_key': '', 'model_server': ''}
+            system_message: 用于 LLM 对话的系统消息，默认为 DEFAULT_SYSTEM_MESSAGE。
+            name: 代理的名称，可选参数。
+            description: 代理的描述信息，主要用于多代理场景。
+            files: 文件 URL 列表，包含该代理初始化时需要管理的文件。
+            **kwargs: 其他关键字参数，将传递给 Memory 模块进行初始化。
+
+        Raises:
+            无显式异常抛出，但父类 Agent 和 Memory 的初始化可能会抛出异常。
         """
         super().__init__(function_list=function_list,
                          llm=llm,
@@ -53,6 +63,7 @@ class FnCallAgent(Agent):
                          name=name,
                          description=description)
 
+        # 默认使用 Memory 模块来管理文件，根据模型类型选择合适的 LLM 配置
         if not hasattr(self, 'mem'):
             # Default to use Memory to manage files
             if 'qwq' in self.llm.model.lower() or 'qvq' in self.llm.model.lower() or 'qwen3' in self.llm.model.lower():

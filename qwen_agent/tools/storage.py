@@ -50,11 +50,13 @@ class Storage(BaseTool):
         'required': ['operate'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.root = self.cfg.get('storage_root_path', os.path.join(DEFAULT_WORKSPACE, 'tools', self.name))
         os.makedirs(self.root, exist_ok=True)
 
+    @log_execution
     def call(self, params: Union[str, dict], **kwargs) -> str:
         params = self._verify_json_format_args(params)
         operate = params['operate']
@@ -72,6 +74,7 @@ class Storage(BaseTool):
         else:
             return self.scan(key)
 
+    @log_execution
     def put(self, key: str, value: str, path: Optional[str] = None) -> str:
         path = path or self.root
 
@@ -85,12 +88,14 @@ class Storage(BaseTool):
         save_text_to_file(path, value)
         return f'Successfully saved {key}.'
 
+    @log_execution
     def get(self, key: str, path: Optional[str] = None) -> str:
         path = path or self.root
         if not os.path.exists(os.path.join(path, key)):
             raise KeyNotExistsError(f'Get Failed: {key} does not exist')
         return read_text_from_file(os.path.join(path, key))
 
+    @log_execution
     def delete(self, key, path: Optional[str] = None) -> str:
         path = path or self.root
         path = os.path.join(path, key)
@@ -100,6 +105,7 @@ class Storage(BaseTool):
         else:
             return f'Delete Failed: {key} does not exist'
 
+    @log_execution
     def scan(self, key: str, path: Optional[str] = None) -> str:
         path = path or self.root
         path = os.path.join(path, key)

@@ -29,6 +29,7 @@ from qwen_agent.utils.utils import has_chinese_chars
 @register_tool('keyword_search')
 class KeywordSearch(BaseSearch):
 
+    @log_execution
     def search(self, query: str, docs: List[Record], max_ref_token: int = DEFAULT_MAX_REF_TOKEN) -> list:
         chunk_and_score = self.sort_by_scores(query=query, docs=docs)
         if not chunk_and_score:
@@ -41,6 +42,7 @@ class KeywordSearch(BaseSearch):
         else:
             return self._get_the_front_part(docs, max_ref_token)
 
+    @log_execution
     def sort_by_scores(self, query: str, docs: List[Record], **kwargs) -> List[Tuple[str, int, float]]:
         wordlist = parse_keyword(query)
         logger.debug('wordlist: ' + ','.join(wordlist))

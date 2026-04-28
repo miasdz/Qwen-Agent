@@ -29,6 +29,7 @@ class RefMaterialOutput(BaseModel):
     url: str
     text: list
 
+    @log_execution
     def to_dict(self) -> dict:
         return {
             'url': self.url,
@@ -49,10 +50,12 @@ class BaseSearch(BaseTool):
         'required': ['query'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.max_ref_token: int = self.cfg.get('max_ref_token', DEFAULT_MAX_REF_TOKEN)
 
+    @log_execution
     def call(self, params: Union[str, dict], docs: List[Union[Record, str, List[str]]] = None, **kwargs) -> list:
         """The basic search algorithm
 
@@ -86,11 +89,13 @@ class BaseSearch(BaseTool):
 
         return self.search(query=query, docs=new_docs, max_ref_token=max_ref_token)
 
+    @log_execution
     def search(self, query: str, docs: List[Record], max_ref_token: int = DEFAULT_MAX_REF_TOKEN) -> list:
         chunk_and_score = self.sort_by_scores(query=query, docs=docs, max_ref_token=max_ref_token)
         return self.get_topk(chunk_and_score=chunk_and_score, docs=docs, max_ref_token=max_ref_token)
 
     @abstractmethod
+    @log_execution
     def sort_by_scores(self, query: str, docs: List[Record], **kwargs) -> List[Tuple[str, int, float]]:
         """The function of compute the correlation score
 
@@ -104,6 +109,7 @@ class BaseSearch(BaseTool):
         """
         raise NotImplementedError
 
+    @log_execution
     def get_topk(self,
                  chunk_and_score: List[Tuple[str, int, float]],
                  docs: List[Record],
@@ -136,8 +142,10 @@ class BaseSearch(BaseTool):
                 res.append(x.to_dict())
         return res
 
+    @log_execution
     def format_docs(self, docs: List[Union[Record, str, List[str]]]):
 
+        @log_execution
         def format_input_doc(doc: List[str], url: str = '') -> Record:
             new_doc = []
             parser = DocParser()
@@ -163,6 +171,7 @@ class BaseSearch(BaseTool):
         return new_docs, all_tokens
 
     @staticmethod
+    @log_execution
     def _get_the_front_part(docs: List[Record], max_ref_token: int = DEFAULT_MAX_REF_TOKEN) -> list:
         single_max_ref_token = int(max_ref_token / len(docs))
         _ref_list = []

@@ -35,33 +35,53 @@ class Memory(Agent):
     By default, this memory can use retrieval tool for RAG.
     """
 
+    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
                  system_message: Optional[str] = DEFAULT_SYSTEM_MESSAGE,
                  files: Optional[List[str]] = None,
                  rag_cfg: Optional[Dict] = None):
-        """Initialization the memory.
+        """初始化记忆模块，用于文件管理和 RAG（检索增强生成）功能。
+
+        该构造函数配置 RAG 相关参数，并初始化工具列表，包括文档检索和文档解析工具。
+        如果没有提供 LLM，则禁用关键词生成策略。
 
         Args:
-            rag_cfg: The config for RAG. One example is:
-              {
-                'max_ref_token': 4000,
-                'parser_page_size': 500,
-                'rag_keygen_strategy': 'SplitQueryThenGenKeyword',
-                'rag_searchers': ['keyword_search', 'front_page_search']
-              }
-              And the above is the default settings.
+            function_list: 可选的工具列表，支持工具名称、工具配置字典或 BaseTool 实例。
+            llm: 大语言模型配置或实例，用于关键词生成等任务。
+            system_message: 系统消息，默认为 DEFAULT_SYSTEM_MESSAGE。
+            files: 可选的文件列表，这些文件将被添加到系统中进行管理。
+            rag_cfg: RAG 配置字典，支持以下配置项：
+                - 'max_ref_token': 最大参考 token 数量，默认为 DEFAULT_MAX_REF_TOKEN
+                - 'parser_page_size': 解析器页面大小，默认为 DEFAULT_PARSER_PAGE_SIZE
+                - 'rag_keygen_strategy': RAG 关键词生成策略，默认为 DEFAULT_RAG_KEYGEN_STRATEGY
+                - 'rag_searchers': RAG 搜索器列表，默认为 DEFAULT_RAG_SEARCHERS
+
+                示例配置：
+                {
+                    'max_ref_token': 4000,
+                    'parser_page_size': 500,
+                    'rag_keygen_strategy': 'SplitQueryThenGenKeyword',
+                    'rag_searchers': ['keyword_search', 'front_page_search']
+                }
+
+        Raises:
+            无显式异常抛出，但父类 Agent 的初始化可能会抛出异常。
         """
+        # 初始化 RAG 配置参数
         self.cfg = rag_cfg or {}
         self.max_ref_token: int = self.cfg.get('max_ref_token', DEFAULT_MAX_REF_TOKEN)
         self.parser_page_size: int = self.cfg.get('parser_page_size', DEFAULT_PARSER_PAGE_SIZE)
         self.rag_searchers = self.cfg.get('rag_searchers', DEFAULT_RAG_SEARCHERS)
         self.rag_keygen_strategy = self.cfg.get('rag_keygen_strategy', DEFAULT_RAG_KEYGEN_STRATEGY)
+
+        # 如果没有可用的 LLM，则禁用关键词生成策略
         if not llm:
             # There is no suitable model available for keygen
             self.rag_keygen_strategy = 'none'
 
+        # 初始化工具列表，添加默认的检索和文档解析工具
         function_list = function_list or []
         super().__init__(function_list=[{
             'name': 'retrieval',
@@ -78,6 +98,7 @@ class Memory(Agent):
 
         self.system_files = files or []
 
+    @log_execution
     def _run(self, messages: List[Message], lang: str = 'en', **kwargs) -> Iterator[List[Message]]:
         """This agent is responsible for processing the input files in the message.
 
@@ -143,6 +164,7 @@ class Memory(Agent):
 
             yield [Message(role=ASSISTANT, content=content, name='memory')]
 
+    @log_execution
     def get_rag_files(self, messages: List[Message]):
         session_files = extract_files_from_messages(messages, include_images=False)
         files = self.system_files + session_files

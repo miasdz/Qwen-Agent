@@ -91,6 +91,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
         'required': ['code'],
     }
 
+    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.work_dir: str = os.getenv('M6_CODE_INTERPRETER_WORK_DIR', self.work_dir)
@@ -102,6 +103,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
         _check_host_deps()
 
     @property
+    @log_execution
     def args_format(self) -> str:
         fmt = self.cfg.get('args_format')
         if fmt is None:
@@ -111,6 +113,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
                 fmt = 'Enclose the code within triple backticks (`) at the beginning and end of the code.'
         return fmt
 
+    @log_execution
     def call(self, params: Union[str, dict], files: List[str] = None, timeout: Optional[int] = 30, **kwargs) -> str:
         super().call(params=params, files=files)  # copy remote files to work_dir
 
@@ -154,6 +157,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
 
         return result if result.strip() else 'Finished execution.'
 
+    @log_execution
     def __del__(self):
         # Recycle the jupyter subprocess and Docker container:
         k: str = f'{self.instance_id}_{os.getpid()}'
@@ -169,6 +173,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
                 pass
             del _DOCKER_CONTAINERS[k]
 
+    @log_execution
     def _build_docker_image(self):
         """Build Docker image from Dockerfile if not exists"""
         # Check if image already exists
@@ -200,6 +205,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
         
         logger.info(f'Successfully built Docker image {self.docker_image_name}')
 
+    @log_execution
     def _get_free_ports(self, n=5):
         ports = []
         sockets = []
@@ -212,6 +218,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
             s.close()
         return ports
 
+    @log_execution
     def _start_kernel(self, kernel_id: str):
         self._build_docker_image()
 
@@ -339,6 +346,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
         
         return kc, container_id
 
+    @log_execution
     def _execute_code(self, kc, code: str) -> str:
         kc.wait_for_ready()
         kc.execute(code)
@@ -393,6 +401,7 @@ class CodeInterpreter(BaseToolWithFileAccess):
         result = result.lstrip('\n')
         return result
 
+    @log_execution
     def _serve_image(self, image_base64: str) -> str:
         import PIL.Image
 
@@ -483,6 +492,7 @@ class AnyThreadEventLoopPolicy(_BasePolicy):  # type: ignore
         asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
     """
 
+    @log_execution
     def get_event_loop(self) -> asyncio.AbstractEventLoop:
         try:
             return super().get_event_loop()

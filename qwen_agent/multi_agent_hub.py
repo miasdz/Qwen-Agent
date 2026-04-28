@@ -22,6 +22,7 @@ from qwen_agent.log import logger
 class MultiAgentHub(ABC):
 
     @property
+    @log_execution
     def agents(self) -> List[Agent]:
         try:
             agent_list = self._agents
@@ -41,10 +42,12 @@ class MultiAgentHub(ABC):
         return agent_list
 
     @property
+    @log_execution
     def agent_names(self) -> List[str]:
         return [x.name for x in self.agents]
 
     @property
+    @log_execution
     def nonuser_agents(self):
         from qwen_agent.agents.user_agent import UserAgent  # put here to avoid cyclic import
         return [a for a in self.agents if not isinstance(a, UserAgent)]
