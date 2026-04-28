@@ -36,7 +36,6 @@ class Memory(Agent):
     By default, this memory can use retrieval tool for RAG.
     """
 
-    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,

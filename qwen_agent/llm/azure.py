@@ -25,7 +25,6 @@ from qwen_agent.llm.oai import TextChatAtOAI
 @register_llm('azure')
 class TextChatAtAzure(TextChatAtOAI):
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         cfg = cfg or {}

@@ -35,7 +35,6 @@ class GroupChat(Agent, MultiAgentHub):
 
     _VALID_AGENT_SELECTION_METHODS = ['manual', 'round_robin', 'random', 'auto']
 
-    @log_execution
     def __init__(self,
                  agents: Union[List[Agent], Dict],
                  agent_selection_method: Optional[str] = 'auto',

@@ -27,7 +27,6 @@ TOOL_REGISTRY = {}
 
 class ToolServiceError(Exception):
 
-    @log_execution
     def __init__(self,
                  exception: Optional[Exception] = None,
                  code: Optional[str] = None,
@@ -114,7 +113,6 @@ class BaseTool(ABC):
     description: str = ''
     parameters: Union[List[dict], dict] = []
 
-    @log_execution
     def __init__(self, cfg: Optional[dict] = None):
         self.cfg = cfg or {}
         if not self.name:
@@ -202,7 +200,6 @@ class BaseTool(ABC):
 
 class BaseToolWithFileAccess(BaseTool, ABC):
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         assert self.name

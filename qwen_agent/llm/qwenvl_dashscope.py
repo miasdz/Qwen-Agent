@@ -40,7 +40,6 @@ class QwenVLChatAtDS(BaseFnCallModel):
     def support_multimodal_input(self) -> bool:
         return True
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'qwen-vl-max'

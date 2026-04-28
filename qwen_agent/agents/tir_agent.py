@@ -57,7 +57,6 @@ def extract_program(result: str, last_only=True):
 class TIRMathAgent(FnCallAgent):
     """TIR(tool-integrated reasoning) agent"""
 
-    @log_execution
     def __init__(self,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,
                  system_message: Optional[str] = DEFAULT_SYSTEM_MESSAGE,

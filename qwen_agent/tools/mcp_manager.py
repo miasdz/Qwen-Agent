@@ -38,7 +38,6 @@ class MCPManager:
             cls._instance = super(MCPManager, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    @log_execution
     def __init__(self):
         if not hasattr(self, 'clients'):  # The singleton should only be inited once
             """Set a new event loop in a separate thread"""
@@ -323,7 +322,6 @@ class MCPManager:
 
 class MCPClient:
 
-    @log_execution
     def __init__(self):
         from mcp import ClientSession
         self.session: Optional[ClientSession] = None

@@ -35,7 +35,6 @@ class Chunk(BaseModel):
     metadata: dict
     token: int
 
-    @log_execution
     def __init__(self, content: str, metadata: dict, token: int):
         super().__init__(content=content, metadata=metadata, token=token)
 
@@ -49,7 +48,6 @@ class Record(BaseModel):
     raw: List[Chunk]
     title: str
 
-    @log_execution
     def __init__(self, url: str, raw: List[Chunk], title: str):
         super().__init__(url=url, raw=raw, title=title)
 
@@ -72,7 +70,6 @@ class DocParser(BaseTool):
         'required': ['url'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.max_ref_token: int = self.cfg.get('max_ref_token', DEFAULT_MAX_REF_TOKEN)

@@ -92,7 +92,6 @@ class CodeInterpreter(BaseToolWithFileAccess):
         'required': ['code'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.work_dir: str = os.getenv('M6_CODE_INTERPRETER_WORK_DIR', self.work_dir)

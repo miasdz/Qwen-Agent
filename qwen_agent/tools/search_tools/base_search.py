@@ -51,7 +51,6 @@ class BaseSearch(BaseTool):
         'required': ['query'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.max_ref_token: int = self.cfg.get('max_ref_token', DEFAULT_MAX_REF_TOKEN)

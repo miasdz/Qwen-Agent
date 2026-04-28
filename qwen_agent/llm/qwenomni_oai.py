@@ -27,7 +27,6 @@ class QwenOmniChatAtOAI(QwenVLChatAtOAI):
     def support_audio_input(self) -> bool:
         return True
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         cfg = cfg or {}
 

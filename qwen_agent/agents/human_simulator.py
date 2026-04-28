@@ -36,7 +36,6 @@ DEFAULT_HUMAN_SIMULATOR_PROMPT = """"Play a game where you act as the human user
 
 class HumanSimulator(Agent):
 
-    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,

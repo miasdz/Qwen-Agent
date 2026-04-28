@@ -30,7 +30,6 @@ from qwen_agent.log import logger
 @register_llm('qwen_dashscope')
 class QwenChatAtDS(BaseFnCallModel):
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'qwen-max'

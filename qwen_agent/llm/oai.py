@@ -37,7 +37,6 @@ from qwen_agent.log import logger
 @register_llm('oai')
 class TextChatAtOAI(BaseFnCallModel):
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.model = self.model or 'gpt-4o-mini'

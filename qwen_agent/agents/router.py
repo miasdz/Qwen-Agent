@@ -36,7 +36,6 @@ Reply: ... # 选中的帮手的回复
 
 class Router(Assistant, MultiAgentHub):
 
-    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,

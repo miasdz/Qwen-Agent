@@ -23,7 +23,6 @@ from qwen_agent.llm.schema import ASSISTANT, FUNCTION, USER, ContentItem, Messag
 
 class BaseFnCallModel(BaseChatModel, ABC):
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         fncall_prompt_type = self.generate_cfg.get('fncall_prompt_type', 'nous')

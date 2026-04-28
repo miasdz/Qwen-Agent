@@ -45,7 +45,6 @@ def register_llm(model_type):
 
 class ModelServiceError(Exception):
 
-    @log_execution
     def __init__(self,
                  exception: Optional[Exception] = None,
                  code: Optional[str] = None,
@@ -81,7 +80,6 @@ class BaseChatModel(ABC):
     def support_audio_input(self) -> bool:
         return False
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         cfg = cfg or {}
         self.model = cfg.get('model', '').strip()

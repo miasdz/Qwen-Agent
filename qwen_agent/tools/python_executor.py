@@ -37,7 +37,6 @@ class GenericRuntime:
     LOCAL_DICT = None
     HEADERS = []
 
-    @log_execution
     def __init__(self):
         self._global_vars = copy.copy(self.GLOBAL_DICT)
         self._local_vars = copy.copy(self.LOCAL_DICT) if self.LOCAL_DICT else None
@@ -114,7 +113,6 @@ class PythonExecutor(BaseTool):
         'required': ['code'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         _check_deps_for_python_executor()
         import multiprocess

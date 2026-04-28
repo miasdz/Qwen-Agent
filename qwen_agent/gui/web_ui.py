@@ -30,7 +30,6 @@ from qwen_agent.utils.utils import print_traceback
 class WebUI:
     """A Common chatbot application for agent."""
 
-    @log_execution
     def __init__(self, agent: Union[Agent, MultiAgentHub, List[Agent]], chatbot_config: Optional[dict] = None):
         """初始化聊天机器人界面。
 

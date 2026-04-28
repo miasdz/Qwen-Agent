@@ -43,7 +43,6 @@ class ExtractDocVocabulary(BaseTool):
         'required': ['files'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.simple_doc_parse = SimpleDocParser()

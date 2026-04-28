@@ -51,7 +51,6 @@ class Storage(BaseTool):
         'required': ['operate'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.root = self.cfg.get('storage_root_path', os.path.join(DEFAULT_WORKSPACE, 'tools', self.name))

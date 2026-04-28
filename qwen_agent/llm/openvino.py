@@ -54,7 +54,6 @@ class OpenVINO(BaseFnCallModel):
                 files=files)
     """
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         if 'ov_model_dir' not in cfg:
@@ -96,7 +95,6 @@ class OpenVINO(BaseFnCallModel):
                     The tokenizer used to decode the model outputs.
             """
 
-            @log_execution
             def __init__(self, stop_sequences, tokenizer):
                 if isinstance(stop_sequences, str):
                     stop_sequences = [stop_sequences]

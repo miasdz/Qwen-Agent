@@ -25,7 +25,6 @@ from qwen_agent.tools.search_tools.front_page_search import POSITIVE_INFINITY
 @register_tool('hybrid_search')
 class HybridSearch(BaseSearch):
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.rag_searchers = self.cfg.get('rag_searchers', DEFAULT_RAG_SEARCHERS)

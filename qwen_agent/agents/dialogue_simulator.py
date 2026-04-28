@@ -23,7 +23,6 @@ from qwen_agent.llm.schema import ASSISTANT, FUNCTION, SYSTEM, USER, Message
 
 class DialogueSimulator(Agent):
 
-    @log_execution
     def __init__(self, user_agent: HumanSimulator, assistant_agent: Agent, max_round: Optional[int] = 5, **kwargs):
         super().__init__(**kwargs)
         self.max_round = max_round

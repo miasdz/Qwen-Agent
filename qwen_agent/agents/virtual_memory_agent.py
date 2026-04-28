@@ -28,7 +28,6 @@ DEFAULT_DESC = 'This agent can utilize tools to retrieve useful information from
 
 class VirtualMemoryAgent(Assistant):
 
-    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,

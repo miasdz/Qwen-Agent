@@ -28,7 +28,6 @@ from qwen_agent.utils.utils import extract_files_from_messages
 class FnCallAgent(Agent):
     """This is a widely applicable function call agent integrated with llm and tool use ability."""
 
-    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,

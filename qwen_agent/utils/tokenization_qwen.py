@@ -60,7 +60,6 @@ class QWenTokenizer:
 
     vocab_files_names = VOCAB_FILES_NAMES
 
-    @log_execution
     def __init__(
         self,
         vocab_file=None,

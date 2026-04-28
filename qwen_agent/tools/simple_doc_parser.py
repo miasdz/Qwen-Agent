@@ -39,7 +39,6 @@ def clean_paragraph(text):
 
 class DocParserError(Exception):
 
-    @log_execution
     def __init__(self,
                  exception: Optional[Exception] = None,
                  code: Optional[str] = None,
@@ -396,7 +395,6 @@ class SimpleDocParser(BaseTool):
         'required': ['url'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
         self.data_root = self.cfg.get('path', os.path.join(DEFAULT_WORKSPACE, 'tools', self.name))

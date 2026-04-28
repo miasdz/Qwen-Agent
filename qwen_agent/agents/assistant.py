@@ -82,7 +82,6 @@ def format_knowledge_to_source_and_content(result: Union[str, List[dict]]) -> Li
 class Assistant(FnCallAgent):
     """This is a widely applicable agent integrated with RAG capabilities and function call ability."""
 
-    @log_execution
     def __init__(self,
                  function_list: Optional[List[Union[str, Dict, BaseTool]]] = None,
                  llm: Optional[Union[Dict, BaseChatModel]] = None,

@@ -35,7 +35,6 @@ class AmapWeather(BaseTool):
         'required': ['location'],
     }
 
-    @log_execution
     def __init__(self, cfg: Optional[Dict] = None):
         super().__init__(cfg)
 
