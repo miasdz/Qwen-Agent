@@ -36,28 +36,18 @@ VIDEO = 'video'
 
 
 class BaseModelCompatibleDict(BaseModel):
-
-    @log_execution
     def __getitem__(self, item):
         return getattr(self, item)
-
-    @log_execution
     def __setitem__(self, key, value):
         setattr(self, key, value)
-
-    @log_execution
     def model_dump(self, **kwargs):
         if 'exclude_none' not in kwargs:
             kwargs['exclude_none'] = True
         return super().model_dump(**kwargs)
-
-    @log_execution
     def model_dump_json(self, **kwargs):
         if 'exclude_none' not in kwargs:
             kwargs['exclude_none'] = True
         return super().model_dump_json(**kwargs)
-
-    @log_execution
     def get(self, key, default=None):
         try:
             value = getattr(self, key)
@@ -67,8 +57,6 @@ class BaseModelCompatibleDict(BaseModel):
                 return default
         except AttributeError:
             return default
-
-    @log_execution
     def __str__(self):
         return f'{self.model_dump()}'
 
@@ -76,12 +64,8 @@ class BaseModelCompatibleDict(BaseModel):
 class FunctionCall(BaseModelCompatibleDict):
     name: str
     arguments: str
-
-    @log_execution
     def __init__(self, name: str, arguments: str):
         super().__init__(name=name, arguments=arguments)
-
-    @log_execution
     def __repr__(self):
         return f'FunctionCall({self.model_dump()})'
 
@@ -92,8 +76,6 @@ class ContentItem(BaseModelCompatibleDict):
     file: Optional[str] = None
     audio: Optional[Union[str, dict]] = None
     video: Optional[Union[str, list]] = None
-
-    @log_execution
     def __init__(self,
                  text: Optional[str] = None,
                  image: Optional[str] = None,
@@ -103,7 +85,6 @@ class ContentItem(BaseModelCompatibleDict):
         super().__init__(text=text, image=image, file=file, audio=audio, video=video)
 
     @model_validator(mode='after')
-    @log_execution
     def check_exclusivity(self):
         provided_fields = 0
         if self.text is not None:
@@ -120,25 +101,19 @@ class ContentItem(BaseModelCompatibleDict):
         if provided_fields != 1:
             raise ValueError("Exactly one of 'text', 'image', 'file', 'audio', or 'video' must be provided.")
         return self
-
-    @log_execution
     def __repr__(self):
         return f'ContentItem({self.model_dump()})'
-
-    @log_execution
     def get_type_and_value(self) -> Tuple[Literal['text', 'image', 'file', 'audio', 'video'], str]:
         (t, v), = self.model_dump().items()
         assert t in ('text', 'image', 'file', 'audio', 'video')
         return t, v
 
     @property
-    @log_execution
     def type(self) -> Literal['text', 'image', 'file', 'audio', 'video']:
         t, v = self.get_type_and_value()
         return t
 
     @property
-    @log_execution
     def value(self) -> str:
         t, v = self.get_type_and_value()
         return v
@@ -151,8 +126,6 @@ class Message(BaseModelCompatibleDict):
     name: Optional[str] = None
     function_call: Optional[FunctionCall] = None
     extra: Optional[dict] = None
-
-    @log_execution
     def __init__(self,
                  role: str,
                  content: Union[str, List[ContentItem]],
@@ -169,13 +142,10 @@ class Message(BaseModelCompatibleDict):
                          name=name,
                          function_call=function_call,
                          extra=extra)
-
-    @log_execution
     def __repr__(self):
         return f'Message({self.model_dump()})'
 
     @field_validator('role')
-    @log_execution
     def role_checker(cls, value: str) -> str:
         if value not in [USER, ASSISTANT, SYSTEM, FUNCTION]:
             raise ValueError(f'{value} must be one of {",".join([USER, ASSISTANT, SYSTEM, FUNCTION])}')

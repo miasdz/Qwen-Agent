@@ -107,7 +107,6 @@ class WebUI:
         messages: The chat history.
     """
 
-    @log_execution
     def run(self,
             messages: List[Message] = None,
             share: bool = False,

@@ -45,7 +45,15 @@ logger.add(
     enqueue=True
 )
 
+
 def log_execution(func):
+    import inspect
+
+    # 如果是生成器函数，直接返回原函数，不进行包装
+    # 因为 Gradio 等框架需要直接控制生成器的迭代
+    if inspect.isgeneratorfunction(func):
+        return func
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         # 使用 __qualname__ 获取限定名称（包含类名），用 __name__ 作为备选
@@ -59,12 +67,26 @@ def log_execution(func):
         logger.debug(f"⏳ 开始执行: {full_name}, 参数: {args}, {kwargs}")
 
         start_time = time.time()
+
+        # 对于普通函数（包括 __init__），正常执行并记录日志
+        result = None
+        exception_occurred = False
+
         try:
             result = func(*args, **kwargs)
             return result
-        finally:
-            # 记录耗时
+        except Exception as e:
+            exception_occurred = True
             duration = time.time() - start_time
-            logger.debug(f"✅ 执行完毕: {func.__name__}, 耗时: {duration:.4f}秒, 返回值：{result}")
+            logger.error(f"❌ 执行失败: {full_name}, 耗时: {duration:.4f}秒, 错误: {e}")
+            raise
+        finally:
+            if not exception_occurred:
+                # 记录耗时（仅在无异常时）
+                duration = time.time() - start_time
+                if func.__name__ == '__init__':
+                    logger.debug(f"✅ 初始化完成: {full_name}, 耗时: {duration:.4f}秒")
+                else:
+                    logger.debug(f"✅ 执行完毕: {func.__name__}, 耗时: {duration:.4f}秒, 返回值：{result}")
 
     return wrapper
