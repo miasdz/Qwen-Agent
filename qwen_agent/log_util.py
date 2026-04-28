@@ -47,7 +47,6 @@ logger.add(
 
 def log_execution(func):
     @wraps(func)
-    @log_execution
     def wrapper(*args, **kwargs):
         # 使用 __qualname__ 获取限定名称（包含类名），用 __name__ 作为备选
         func_name = getattr(func, '__qualname__', func.__name__)

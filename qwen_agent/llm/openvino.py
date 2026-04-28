@@ -1,3 +1,4 @@
+from qwen_agent.log_util import log_execution
 # Copyright 2024 Intel Corporation. All rights reserved.
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");

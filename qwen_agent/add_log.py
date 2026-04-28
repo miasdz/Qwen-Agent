@@ -10,7 +10,7 @@ TARGET_DIR = Path(__file__).parent
 def should_skip_file(filepath: Path) -> bool:
     """判断是否应该跳过该文件"""
     # 跳过自身
-    if filepath.name == "add_log.py":
+    if "add_log.py" in filepath.name or "log_util.py" in filepath.name:
         return True
     # 跳过 __init__.py（可选，根据需求调整）
     # if filepath.name == "__init__.py":
@@ -109,7 +109,7 @@ def main(dry_run: bool = False):
     Args:
         dry_run: 如果为 True，只显示将要执行的操作，不实际修改文件
     """
-    py_files = list(TARGET_DIR.glob("*.py"))
+    py_files = list(TARGET_DIR.glob("**/*.py"))
 
     if not py_files:
         print("未找到 Python 文件")

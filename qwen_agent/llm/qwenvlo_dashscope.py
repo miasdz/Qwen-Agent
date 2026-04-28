@@ -1,3 +1,4 @@
+from qwen_agent.log_util import log_execution
 from typing import Dict, Optional
 
 from qwen_agent.llm.base import register_llm
