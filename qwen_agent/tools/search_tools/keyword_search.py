@@ -29,15 +29,32 @@ from qwen_agent.utils.utils import has_chinese_chars
 
 @register_tool('keyword_search')
 class KeywordSearch(BaseSearch):
+    """基于关键词的搜索工具类
+
+    使用BM25算法对文档进行关键词匹配和排序
+    """
 
     @log_execution
     def search(self, query: str, docs: List[Record], max_ref_token: int = DEFAULT_MAX_REF_TOKEN) -> list:
+        """执行关键词搜索
+
+        Args:
+            query: 搜索查询字符串
+            docs: 待搜索的文档列表
+            max_ref_token: 最大引用token数
+
+        Returns:
+            list: 搜索结果列表
+        """
+        # 按相关性分数对文档片段进行排序
         chunk_and_score = self.sort_by_scores(query=query, docs=docs)
         if not chunk_and_score:
             return self._get_the_front_part(docs, max_ref_token)
 
+        # 获取最高相似度分数
         max_sims = chunk_and_score[0][-1]
 
+        # 如果存在有效匹配则返回TopK结果，否则返回文档前部内容
         if max_sims != 0:
             return super().get_topk(chunk_and_score=chunk_and_score, docs=docs, max_ref_token=max_ref_token)
         else:
@@ -45,24 +62,38 @@ class KeywordSearch(BaseSearch):
 
     @log_execution
     def sort_by_scores(self, query: str, docs: List[Record], **kwargs) -> List[Tuple[str, int, float]]:
+        """根据相关性分数对文档片段进行排序
+
+        Args:
+            query: 搜索查询字符串
+            docs: 待排序的文档列表
+            **kwargs: 其他参数
+
+        Returns:
+            List[Tuple[str, int, float]]: 包含(来源, 片段ID, 分数)的元组列表，按分数降序排列
+        """
+        # 解析查询关键词
         wordlist = parse_keyword(query)
         logger.debug('wordlist: ' + ','.join(wordlist))
         if not wordlist:
-            # This represents the queries that do not use retrieval: summarize, etc.
+            # 对于不使用检索的查询（如总结等），返回空列表
             return []
 
-        # Plain all chunks from all docs
+        # 收集所有文档的所有片段
         all_chunks = []
         for doc in docs:
             all_chunks.extend(doc.raw)
 
-        # Using bm25 retrieval
+        # 使用BM25算法计算相关性分数
         from rank_bm25 import BM25Okapi
         bm25 = BM25Okapi([split_text_into_keywords(x.content) for x in all_chunks])
         doc_scores = bm25.get_scores(wordlist)
+
+        # 构建包含来源、片段ID和分数的结果列表
         chunk_and_score = [
             (chk.metadata['source'], chk.metadata['chunk_id'], score) for chk, score in zip(all_chunks, doc_scores)
         ]
+        # 按分数降序排序
         chunk_and_score.sort(key=lambda item: item[2], reverse=True)
         assert len(chunk_and_score) > 0
 
@@ -170,6 +201,19 @@ def split_text_into_keywords(text: str) -> List[str]:
 
 
 def parse_keyword(text):
+    """解析查询文本并提取关键词列表
+
+    支持两种输入格式：
+    1. JSON格式：包含中英文关键词列表和待处理文本
+    2. 普通文本：直接进行分词和关键词提取
+
+    Args:
+        text: 输入的查询文本，可以是JSON字符串或普通文本
+
+    Returns:
+        List[str]: 提取的关键词列表，经过小写转换、词干提取和停用词过滤
+    """
+    # 尝试解析JSON格式的输入，如果失败则按普通文本处理
     try:
         res = json5.loads(text)
     except Exception:
@@ -178,19 +222,27 @@ def parse_keyword(text):
     import snowballstemmer
     stemmer = snowballstemmer.stemmer('english')
 
-    # json format
+    # 处理JSON格式的关键词提取
     _wordlist = []
     try:
+        # 提取中文关键词并转换为小写
         if 'keywords_zh' in res and isinstance(res['keywords_zh'], list):
             _wordlist.extend([kw.lower() for kw in res['keywords_zh']])
+        # 提取英文关键词并转换为小写
         if 'keywords_en' in res and isinstance(res['keywords_en'], list):
             _wordlist.extend([kw.lower() for kw in res['keywords_en']])
+
+        # 对英文关键词进行词干提取
         _wordlist = stemmer.stemWords(_wordlist)
+
+        # 过滤停用词
         wordlist = []
         for x in _wordlist:
             if x in WORDS_TO_IGNORE:
                 continue
             wordlist.append(x)
+
+        # 从文本中提取额外关键词并合并
         split_wordlist = split_text_into_keywords(res['text'])
         wordlist += split_wordlist
         return wordlist

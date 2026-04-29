@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pathlib import Path
 
 from qwen_agent.agents import Assistant
 from qwen_agent.gui import WebUI
@@ -32,11 +33,17 @@ def app_gui():
             'top_p': 0.8
         }
     }
+
+    TARGET_DIR = Path(__file__).parent
+    files = list(TARGET_DIR.glob("data/*"))
+
+    files_list = [file.as_posix().strip() for file in files]
+
     # Define the agent
     bot = Assistant(llm=llm_cfg,
                     name='Assistant',
                     description='使用RAG检索并回答，支持文件类型：PDF/Word/PPT/TXT/HTML。',
-                    files=["https://arxiv.org/pdf/1706.03762.pdf"])
+                    files=files_list)
     chatbot_config = {
         'prompt.suggestions': [
             {
