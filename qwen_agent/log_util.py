@@ -2,6 +2,7 @@ from loguru import logger
 import time
 from functools import wraps
 import sys
+import contextvars
 
 # 1. 移除 Loguru 默认的处理器
 logger.remove()
@@ -45,6 +46,7 @@ logger.add(
     enqueue=True
 )
 
+stack = contextvars.ContextVar('user', default='root')
 
 def log_execution(func):
     import inspect

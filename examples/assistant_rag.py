@@ -25,6 +25,8 @@ def test():
 
 
 def app_gui():
+    # 文档地址
+    # https://qwenlm.github.io/Qwen-Agent/en/guide/get_started/configuration/
     llm_cfg = {
         'model': 'qwen3-max-2026-01-23',
         'model_type': 'qwen_dashscope',

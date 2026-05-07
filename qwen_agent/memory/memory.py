@@ -82,6 +82,7 @@ class Memory(Agent):
             self.rag_keygen_strategy = 'none'
 
         # 初始化工具列表，添加默认的检索和文档解析工具
+        # 搜索 @register_tool('工具名称')查看工具信息
         function_list = function_list or []
         super().__init__(function_list=[{
             'name': 'retrieval',
