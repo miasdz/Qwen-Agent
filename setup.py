@@ -83,6 +83,8 @@ setup(
             'python-pptx',
             'pandas',
             'tabulate',
+            'langchain',
+            'langchain_community'
         ],
 
         # Extra dependencies for MCP:
